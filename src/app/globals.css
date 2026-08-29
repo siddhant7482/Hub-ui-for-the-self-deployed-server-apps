@@ -31,21 +31,41 @@
 html { height:100% }
 body {
   margin:0; padding:0; min-height:100%;
-  background:#101114; color:var(--ink);
+  color:var(--ink);
   font-family:var(--font-sans),system-ui,sans-serif; -webkit-font-smoothing:antialiased;
   display:flex;
+
+  /* The deck is a physical object and it should be sitting on
+     something, not floating in a void. Layered top to bottom:
+       1. warm light pooling from above, as if the panel is lit
+       2. cool depth falling away below it
+       3. a faint engineering grid, barely there
+       4. a base that is blue-black rather than dead black */
+  /* The deck sits on a bone surface rather than in a void: a lighter,
+     warmer tone than the case so the object still reads as an object,
+     with a soft grid and light falling from above. */
+  background:
+    radial-gradient(120% 70% at 50% -12%, rgba(255,255,255,.85), transparent 62%),
+    repeating-linear-gradient(0deg,  rgba(26,26,28,.028) 0 1px, transparent 1px 46px),
+    repeating-linear-gradient(90deg, rgba(26,26,28,.028) 0 1px, transparent 1px 46px),
+    linear-gradient(175deg, #F1EEE7 0%, #E6E2DA 58%, #DAD5CB 100%);
+  background-attachment: fixed;
 }
 @media (prefers-reduced-motion:reduce){ *,*::before,*::after{ transition:none !important; animation:none !important } }
 
 /* ---------- case ---------- */
 .deck {
   flex:1; min-width:0; display:flex; flex-direction:column;
-  margin:clamp(0px,.9vw,14px);
+  margin:clamp(0px,1.7vw,30px);
   background:var(--case);
   border-radius:clamp(0px,1.3vw,20px);
   padding:clamp(.5rem,1vw,1.05rem);
   position:relative;
-  box-shadow:0 1px 0 rgba(255,255,255,.16) inset, 0 -3px 0 rgba(0,0,0,.28) inset, 0 26px 50px -26px rgba(0,0,0,.85);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.5) inset,
+    0 -3px 0 rgba(0,0,0,.16) inset,
+    0 2px 5px rgba(74,66,52,.16),
+    0 22px 46px -20px rgba(74,66,52,.42);
 }
 .screw { position:absolute; width:11px; height:11px; border-radius:50%;
   background:radial-gradient(circle at 34% 32%, var(--panel-hi), var(--panel-lo));
