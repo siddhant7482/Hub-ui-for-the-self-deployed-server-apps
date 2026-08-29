@@ -45,9 +45,13 @@ body {
      warmer tone than the case so the object still reads as an object,
      with a soft grid and light falling from above. */
   background:
-    radial-gradient(120% 70% at 50% -12%, rgba(255,255,255,.85), transparent 62%),
-    repeating-linear-gradient(0deg,  rgba(26,26,28,.028) 0 1px, transparent 1px 46px),
-    repeating-linear-gradient(90deg, rgba(26,26,28,.028) 0 1px, transparent 1px 46px),
+    radial-gradient(120% 70% at 50% -12%, rgba(255,255,255,.72), transparent 62%),
+    /* Graph paper: a fine grid with a heavier rule every fourth line.
+       Two weights read as drawn structure; one weight reads as noise. */
+    repeating-linear-gradient(0deg,  rgba(20,20,22,.105) 0 1px, transparent 1px 176px),
+    repeating-linear-gradient(90deg, rgba(20,20,22,.105) 0 1px, transparent 1px 176px),
+    repeating-linear-gradient(0deg,  rgba(20,20,22,.048) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, rgba(20,20,22,.048) 0 1px, transparent 1px 44px),
     linear-gradient(175deg, #F1EEE7 0%, #E6E2DA 58%, #DAD5CB 100%);
   background-attachment: fixed;
 }
