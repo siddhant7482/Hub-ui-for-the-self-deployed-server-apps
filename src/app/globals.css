@@ -253,3 +253,40 @@ input[type=range]::-moz-range-thumb { width:16px; height:26px; border:0; border-
 }
 
 .serial { text-align:center; font-family:var(--mono); font-size:.54rem; color:var(--ink-2); opacity:.6; margin-top:.85rem; letter-spacing:.16em }
+
+/* ---------- booting ----------
+   The loader is the deck with no power. Everything is already in place
+   so the real data lands without moving anything; only the light
+   changes. Held deliberately quiet — a panel warming up should look
+   patient, not frantic. */
+.booting .plate { position:relative; overflow:hidden }
+.booting .plate::after {
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,.34) 50%, transparent 62%);
+  transform:translateX(-100%);
+  animation:sweep 2.1s ease-in-out infinite;
+}
+@keyframes sweep { to { transform:translateX(100%) } }
+
+/* Each LED comes up a beat after the one before it, so the row reads as
+   a sequence rather than six things that happen to be dead. */
+.booting .led.scan {
+  animation:wake 1.9s ease-in-out infinite;
+  animation-delay:calc(var(--i, 0) * .16s);
+}
+@keyframes wake {
+  0%, 70%, 100% { background:rgba(0,0,0,.22); box-shadow:inset 0 1px 2px rgba(0,0,0,.55) }
+  35% { background:var(--ink-2); box-shadow:0 0 7px 1px rgba(108,105,99,.6) }
+}
+
+/* A block cursor after the boot line, because the readout is a terminal
+   and terminals blink. */
+.caret {
+  display:inline-block; width:.5em; height:1em; margin-left:.35em;
+  background:var(--screen-fg); opacity:.85; vertical-align:-.12em;
+  animation:caret 1.05s steps(2) infinite;
+}
+@keyframes caret { 50% { opacity:0 } }
+
+.booting .pad-name, .booting .pad-role, .booting .cap-verb { opacity:.34 }
+.booting .screen-line { opacity:.8 }
