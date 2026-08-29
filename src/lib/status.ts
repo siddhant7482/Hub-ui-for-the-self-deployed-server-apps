@@ -42,6 +42,9 @@ async function askOne(app: AppEntry): Promise<AppStatus> {
 
 export interface HubModel {
   statuses: Record<string, AppStatus>;
+  /** Values from apps that expose a settings endpoint, so the deck can
+   *  show a real number on a control rather than a guess. */
+  settings: Record<string, { monthlyTarget?: number }>;
   /** Every alert from every app, merged and ordered by when. This is
    *  the readout, and the reason the hub beats a bookmarks folder. */
   alerts: Array<StatusAlert & { app: string; appName: string; colour: string }>;
@@ -49,8 +52,31 @@ export interface HubModel {
   total: number;
 }
 
+/** Optional, best-effort: a missing settings endpoint just means the
+ *  control renders dead rather than the page failing. */
+async function askSettings(app: AppEntry): Promise<[string, { monthlyTarget?: number }] | null> {
+  if (!app.url || !app.settingsPath) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(`${app.url}${app.settingsPath}`, { signal: controller.signal, cache: "no-store" });
+    if (!res.ok) return null;
+    const body = await res.json().catch(() => null);
+    return body && typeof body === "object" ? [app.id, body] : null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function getHub(): Promise<HubModel> {
-  const results = await Promise.all(APPS.map(askOne));
+  const [results, settingsPairs] = await Promise.all([
+    Promise.all(APPS.map(askOne)),
+    Promise.all(APPS.map(askSettings)),
+  ]);
+  const settings: Record<string, { monthlyTarget?: number }> = {};
+  for (const pair of settingsPairs) if (pair) settings[pair[0]] = pair[1];
   const statuses: Record<string, AppStatus> = {};
   results.forEach((s, i) => (statuses[APPS[i].id] = s));
 
@@ -72,6 +98,7 @@ export async function getHub(): Promise<HubModel> {
 
   return {
     statuses,
+    settings,
     alerts,
     installed: APPS.filter((a) => a.url && statuses[a.id]?.level !== "down").length,
     total: APPS.length,

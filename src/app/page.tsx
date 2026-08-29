@@ -30,7 +30,8 @@ export default async function Home() {
       alerts={hub.alerts}
       installed={hub.installed}
       total={hub.total}
-      node={{ memUsed, memTotal, load, cores, diskKnown: false }}
+      node={{ memUsed, memTotal, load, cores }}
+      monthlyTarget={hub.settings["warden"]?.monthlyTarget ?? null}
       now={now}
     />
   );

@@ -28,6 +28,9 @@ export interface AppEntry {
   /** Base URL, or null when the app has not been built. */
   url: string | null;
   capture?: CaptureSpec;
+  /** Path to a settings endpoint the deck may read and write, when the
+   *  app chooses to expose one. Optional — most apps will not. */
+  settingsPath?: string;
 }
 
 const env = (key: string): string | null => {
@@ -44,6 +47,7 @@ export const APPS: AppEntry[] = [
     shade: "#A93A1D",
     url: env("WARDEN_URL") ?? "http://localhost:3000",
     capture: { verb: "LOG", hint: "log an application" },
+    settingsPath: "/api/settings",
   },
   {
     id: "nori",

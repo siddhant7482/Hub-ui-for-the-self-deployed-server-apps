@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Figtree, DM_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -10,6 +10,14 @@ const mono = DM_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--
 export const metadata: Metadata = {
   title: "CommandHQ",
   description: "The front door.",
+};
+
+/* Without this a phone lays the page out at ~980px and scales it down,
+ * which is why the deck looked cropped rather than responsive. */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#101114",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
