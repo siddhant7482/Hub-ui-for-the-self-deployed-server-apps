@@ -1,0 +1,122 @@
+/* ============================================================
+   COMMANDHQ — the deck. Bone finish.
+
+   A physical instrument, not a picture of one. Every control does
+   something; nothing is ornament.
+
+   Organised by what a control IS, not which app owns it:
+     CAPTURE — the things you put into CommandHQ
+     NODE    — the machine itself
+   Each control carries its app's colour on its left edge, so the panel
+   reads as one instrument rather than six bolted together.
+
+   Controls for apps that are not installed are dead, never hidden —
+   the panel is the roadmap as well as the console.
+   ============================================================ */
+
+:root {
+  --case:#C9C6BF; --panel:#DEDBD4; --panel-hi:#EFEEE9; --panel-lo:#A9A69F;
+  --pad:#F3F1EC; --pad-lo:#A9A69F; --pad-off:#CFCCC5;
+  --ink:#1A1A1C; --ink-2:#6C6963; --engrave:rgba(255,255,255,.72);
+  --accent:#E4572E; --screen:#14161A; --screen-fg:#FFB454;
+  --mono:"DM Mono",ui-monospace,monospace;
+}
+
+* { box-sizing:border-box }
+html,body { margin:0; padding:0 }
+body {
+  padding:clamp(.5rem,3vw,2.2rem); background:#101114; color:var(--ink);
+  font-family:var(--font-sans),system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+  display:flex; flex-direction:column; align-items:center; gap:.9rem;
+}
+@media (prefers-reduced-motion:reduce){ *,*::before,*::after{ transition:none !important; animation:none !important } }
+
+/* ---------- case ---------- */
+.deck { width:100%; max-width:1000px; background:var(--case); border-radius:20px;
+  padding:clamp(.65rem,2.2vw,1.05rem); position:relative;
+  box-shadow:0 1px 0 rgba(255,255,255,.16) inset, 0 -3px 0 rgba(0,0,0,.28) inset, 0 26px 50px -26px rgba(0,0,0,.85) }
+.screw { position:absolute; width:11px; height:11px; border-radius:50%;
+  background:radial-gradient(circle at 34% 32%, var(--panel-hi), var(--panel-lo));
+  box-shadow:0 1px 1px rgba(255,255,255,.28), inset 0 1px 2px rgba(0,0,0,.5) }
+.screw::after { content:""; position:absolute; inset:3px 2px; border-top:1.5px solid rgba(0,0,0,.42); transform:rotate(32deg) }
+.screw.tl{top:9px;left:9px} .screw.tr{top:9px;right:9px} .screw.bl{bottom:9px;left:9px} .screw.br{bottom:9px;right:9px}
+
+.plate { background:var(--panel); border-radius:13px; padding:clamp(.85rem,2.5vw,1.45rem);
+  box-shadow:inset 0 1.5px 0 var(--panel-hi), inset 0 -2px 0 rgba(0,0,0,.14), 0 3px 0 var(--panel-lo) }
+
+.brand { display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; flex-wrap:wrap; margin-bottom:.9rem }
+.brand-name { font-weight:900; font-size:clamp(.95rem,2.6vw,1.18rem); letter-spacing:-.02em }
+.brand-name small { display:block; font-family:var(--mono); font-weight:400; font-size:.58rem; letter-spacing:.18em; color:var(--ink-2); margin-top:.2rem }
+.brand-meta { font-family:var(--mono); font-size:.64rem; color:var(--ink-2); text-align:right; line-height:1.5 }
+
+/* ---------- readout ---------- */
+.screen { background:var(--screen); border-radius:7px; padding:.8rem .95rem; margin-bottom:1.05rem;
+  box-shadow:inset 0 3px 9px rgba(0,0,0,.75), 0 1px 0 var(--panel-hi);
+  position:relative; overflow:hidden; min-height:84px;
+  display:flex; flex-direction:column; justify-content:center; gap:.28rem }
+.screen::after { content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(circle, rgba(0,0,0,.34) 32%, transparent 33%); background-size:3px 3px; opacity:.55 }
+.screen-head { font-family:var(--mono); font-size:.56rem; letter-spacing:.2em; color:var(--screen-fg); opacity:.45; margin-bottom:.2rem }
+.screen-line { font-family:var(--mono); color:var(--screen-fg); font-size:clamp(.7rem,1.9vw,.85rem);
+  letter-spacing:.03em; display:flex; gap:.65rem; align-items:baseline; text-shadow:0 0 9px rgba(255,180,84,.35);
+  text-decoration:none }
+a.screen-line:hover .txt { text-decoration:underline }
+a.screen-line:focus-visible { outline:2px solid var(--screen-fg); outline-offset:2px; border-radius:3px }
+.screen-line .tag { opacity:.62; width:4.6rem; flex:none }
+.screen-line .txt { flex:1; min-width:0 }
+.screen-line .when { opacity:.7; flex:none; font-size:.9em }
+.screen-line.quiet { opacity:.42 }
+
+.legend { font-family:var(--mono); font-size:.56rem; letter-spacing:.22em; color:var(--ink-2);
+  text-shadow:0 1px 0 var(--engrave); display:flex; align-items:center; gap:.7rem; margin:0 0 .65rem }
+.legend::after { content:""; flex:1; height:1px; background:rgba(0,0,0,.13); box-shadow:0 1px 0 var(--engrave) }
+
+/* ---------- app pads ---------- */
+.pads { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(.45rem,1.7vw,.8rem) }
+@media (max-width:660px){ .pads{ grid-template-columns:repeat(2,1fr) } }
+.pad { border:0; cursor:pointer; text-align:left; font:inherit; color:var(--ink); background:var(--pad);
+  border-radius:9px; padding:.75rem; display:flex; flex-direction:column; gap:.5rem; min-height:86px;
+  text-decoration:none;
+  box-shadow:0 4px 0 var(--pad-lo), 0 1px 0 rgba(255,255,255,.5) inset; transition:transform .07s ease, box-shadow .07s ease }
+.pad:hover { filter:brightness(1.03) }
+.pad:active { transform:translateY(4px); box-shadow:0 0 0 var(--pad-lo), 0 1px 0 rgba(255,255,255,.5) inset }
+.pad:focus-visible { outline:2.5px solid var(--accent); outline-offset:3px }
+.led { width:9px; height:9px; border-radius:50%; background:rgba(0,0,0,.22); box-shadow:inset 0 1px 2px rgba(0,0,0,.55) }
+.pad.on .led { background:var(--c); box-shadow:0 0 10px 1px var(--c), inset 0 0 2px rgba(255,255,255,.7) }
+.pad.alarm .led { animation:pulse 1.5s ease-in-out infinite }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.pad-name { font-weight:800; font-size:clamp(.92rem,2.3vw,1.1rem); letter-spacing:-.02em; line-height:1 }
+.pad-stat { font-family:var(--mono); font-size:.6rem; color:var(--ink-2); margin-top:auto; line-height:1.45 }
+.pad.off { background:var(--pad-off); box-shadow:0 3px 0 var(--pad-lo); cursor:default }
+.pad.off .pad-name { opacity:.42 } .pad.off .pad-stat { opacity:.55 }
+.pad.down .led { background:#8d8a83; box-shadow:inset 0 1px 2px rgba(0,0,0,.55) }
+
+/* ---------- capture ---------- */
+.capture { display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(.45rem,1.7vw,.8rem) }
+@media (max-width:760px){ .capture{ grid-template-columns:repeat(2,1fr) } }
+.cap { border:0; cursor:pointer; font:inherit; color:#fff; border-radius:9px; padding:.95rem .8rem .85rem;
+  background:var(--c); text-align:left;
+  box-shadow:0 5px 0 var(--cdark), 0 1px 0 rgba(255,255,255,.28) inset;
+  transition:transform .07s ease, box-shadow .07s ease }
+.cap:active:not(:disabled) { transform:translateY(5px); box-shadow:0 0 0 var(--cdark), 0 1px 0 rgba(255,255,255,.28) inset }
+.cap:focus-visible { outline:3px solid var(--ink); outline-offset:3px }
+.cap-verb { font-weight:900; font-size:clamp(1rem,2.7vw,1.28rem); letter-spacing:-.02em; line-height:1 }
+.cap-app { font-family:var(--mono); font-size:.55rem; letter-spacing:.18em; opacity:.82; margin-top:.45rem }
+.cap-sub { font-family:var(--mono); font-size:.58rem; opacity:.9; margin-top:.5rem }
+.cap:disabled { background:var(--pad-off); color:var(--ink-2); box-shadow:0 3px 0 var(--pad-lo); cursor:default }
+.cap:disabled .cap-verb { opacity:.45 }
+.cap.busy { opacity:.75; cursor:progress }
+
+/* ---------- node ---------- */
+.node-row { display:grid; grid-template-columns:repeat(3,1fr) auto; gap:clamp(.55rem,2vw,1rem); align-items:end }
+@media (max-width:720px){ .node-row{ grid-template-columns:repeat(2,1fr) } }
+@media (max-width:460px){ .node-row{ grid-template-columns:1fr } }
+.m-top { font-family:var(--mono); font-size:.6rem; color:var(--ink-2); display:flex; justify-content:space-between; gap:.5rem }
+.m-track { height:7px; border-radius:99px; margin-top:.4rem; background:rgba(0,0,0,.17);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.3), 0 1px 0 var(--engrave); overflow:hidden }
+.m-track i { display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .35s ease }
+.m-track.pending i { background:var(--pad-lo) }
+.sentry-lamp { display:flex; align-items:center; gap:.55rem; font-family:var(--mono); font-size:.6rem; color:var(--ink-2); white-space:nowrap }
+.sentry-lamp .led { width:11px; height:11px }
+
+.serial { text-align:center; font-family:var(--mono); font-size:.54rem; color:var(--ink-2); opacity:.6; margin-top:.9rem; letter-spacing:.16em }

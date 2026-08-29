@@ -1,0 +1,530 @@
+<title>CommandHQ Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;800;900&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+  /* ============================================================
+     COMMANDHQ — the deck.  Bone finish.
+
+     A physical instrument, not a picture of one. Every control does
+     something; nothing is ornament.
+
+     Organised by what a control IS, not which app owns it:
+       CAPTURE — the four things you put into CommandHQ
+       TUNE    — the settings you actually change
+       NODE    — the machine itself
+     Each control carries its app's colour on the left edge, so the
+     panel reads as one instrument rather than six bolted together.
+
+     Controls for unbuilt apps are dead until "All built" — the panel
+     never pretends to operate something that does not exist.
+     ============================================================ */
+
+  :root {
+    --warden:#D8341F; --nori:#E88C3C; --vault:#4A7FA5;
+    --archive:#9B7FBF; --registry:#2F7D5F; --sentry:#3FB3AF;
+
+    --case:#C9C6BF; --panel:#DEDBD4; --panel-hi:#EFEEE9; --panel-lo:#A9A69F;
+    --pad:#F3F1EC; --pad-lo:#A9A69F; --pad-off:#CFCCC5;
+    --ink:#1A1A1C; --ink-2:#6C6963; --engrave:rgba(255,255,255,.72);
+    --accent:#E4572E; --screen:#14161A; --screen-fg:#FFB454;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin:0; padding:clamp(.5rem,3vw,2.2rem); background:#101114;
+    font-family:"Figtree",system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center; gap:.9rem; }
+  @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ transition:none !important; animation:none !important } }
+
+  .proto { width:100%; max-width:1000px; display:flex; gap:.35rem; align-items:center; flex-wrap:wrap;
+    font-family:"DM Mono",monospace; font-size:.64rem; color:#7f838c }
+  .proto > span { margin-right:.35rem }
+  .proto button { font:inherit; background:none; color:#9aa0a8; border:1px solid #33363c;
+    border-radius:99px; padding:.4em .9em; cursor:pointer }
+  .proto button:hover { color:#fff; border-color:#5a5f68 }
+  .proto button[aria-pressed="true"] { background:#EDEEF0; color:#101114; border-color:#EDEEF0 }
+  .proto button:focus-visible { outline:2px solid var(--accent); outline-offset:2px }
+
+  .deck { width:100%; max-width:1000px; background:var(--case); border-radius:20px;
+    padding:clamp(.65rem,2.2vw,1.05rem); position:relative;
+    box-shadow:0 1px 0 rgba(255,255,255,.16) inset, 0 -3px 0 rgba(0,0,0,.28) inset, 0 26px 50px -26px rgba(0,0,0,.85) }
+  .screw { position:absolute; width:11px; height:11px; border-radius:50%;
+    background:radial-gradient(circle at 34% 32%, var(--panel-hi), var(--panel-lo));
+    box-shadow:0 1px 1px rgba(255,255,255,.28), inset 0 1px 2px rgba(0,0,0,.5) }
+  .screw::after { content:""; position:absolute; inset:3px 2px; border-top:1.5px solid rgba(0,0,0,.42); transform:rotate(32deg) }
+  .screw.tl{top:9px;left:9px} .screw.tr{top:9px;right:9px} .screw.bl{bottom:9px;left:9px} .screw.br{bottom:9px;right:9px}
+
+  .plate { background:var(--panel); border-radius:13px; padding:clamp(.85rem,2.5vw,1.45rem);
+    box-shadow:inset 0 1.5px 0 var(--panel-hi), inset 0 -2px 0 rgba(0,0,0,.14), 0 3px 0 var(--panel-lo) }
+
+  .brand { display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; flex-wrap:wrap; margin-bottom:.9rem }
+  .brand-name { font-weight:900; font-size:clamp(.95rem,2.6vw,1.18rem); letter-spacing:-.02em; color:var(--ink) }
+  .brand-name small { display:block; font-family:"DM Mono",monospace; font-weight:400; font-size:.58rem; letter-spacing:.18em; color:var(--ink-2); margin-top:.2rem }
+  .brand-meta { font-family:"DM Mono",monospace; font-size:.64rem; color:var(--ink-2); text-align:right; line-height:1.5 }
+
+  .screen { background:var(--screen); border-radius:7px; padding:.8rem .95rem; margin-bottom:1.05rem;
+    box-shadow:inset 0 3px 9px rgba(0,0,0,.75), 0 1px 0 var(--panel-hi);
+    position:relative; overflow:hidden; min-height:84px; display:flex; flex-direction:column; justify-content:center; gap:.28rem }
+  .screen::after { content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:radial-gradient(circle, rgba(0,0,0,.34) 32%, transparent 33%); background-size:3px 3px; opacity:.55 }
+  .screen-head { font-family:"DM Mono",monospace; font-size:.56rem; letter-spacing:.2em; color:var(--screen-fg); opacity:.45; margin-bottom:.2rem }
+  .screen-line { font-family:"DM Mono",monospace; color:var(--screen-fg); font-size:clamp(.7rem,1.9vw,.85rem);
+    letter-spacing:.03em; display:flex; gap:.65rem; align-items:baseline; text-shadow:0 0 9px rgba(255,180,84,.35) }
+  .screen-line .tag { opacity:.62; width:4.4rem; flex:none }
+  .screen-line .txt { flex:1; min-width:0 }
+  .screen-line.quiet { opacity:.42 }
+
+  .legend { font-family:"DM Mono",monospace; font-size:.56rem; letter-spacing:.22em; color:var(--ink-2);
+    text-shadow:0 1px 0 var(--engrave); display:flex; align-items:center; gap:.7rem; margin:0 0 .65rem }
+  .legend::after { content:""; flex:1; height:1px; background:rgba(0,0,0,.13); box-shadow:0 1px 0 var(--engrave) }
+
+  /* ---------- app pads ---------- */
+  .pads { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(.45rem,1.7vw,.8rem) }
+  @media (max-width:660px){ .pads{ grid-template-columns:repeat(2,1fr) } }
+  .pad { border:0; cursor:pointer; text-align:left; font:inherit; color:var(--ink); background:var(--pad);
+    border-radius:9px; padding:.75rem; display:flex; flex-direction:column; gap:.5rem; min-height:86px;
+    box-shadow:0 4px 0 var(--pad-lo), 0 1px 0 rgba(255,255,255,.5) inset; transition:transform .07s ease, box-shadow .07s ease }
+  .pad:hover { filter:brightness(1.03) }
+  .pad:active { transform:translateY(4px); box-shadow:0 0 0 var(--pad-lo), 0 1px 0 rgba(255,255,255,.5) inset }
+  .pad:focus-visible { outline:2.5px solid var(--accent); outline-offset:3px }
+  .led { width:9px; height:9px; border-radius:50%; background:rgba(0,0,0,.22); box-shadow:inset 0 1px 2px rgba(0,0,0,.55) }
+  .pad.on .led { background:var(--c); box-shadow:0 0 10px 1px var(--c), inset 0 0 2px rgba(255,255,255,.7) }
+  .pad.on.alarm .led { animation:pulse 1.5s ease-in-out infinite }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .pad-name { font-weight:800; font-size:clamp(.92rem,2.3vw,1.1rem); letter-spacing:-.02em; line-height:1 }
+  .pad-stat { font-family:"DM Mono",monospace; font-size:.6rem; color:var(--ink-2); margin-top:auto; line-height:1.45 }
+  .pad.off { background:var(--pad-off); box-shadow:0 3px 0 var(--pad-lo); cursor:default }
+  .pad.off .pad-name { opacity:.42 } .pad.off .pad-stat { opacity:.55 }
+
+  /* ---------- capture row ---------- */
+  .capture { display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(.45rem,1.7vw,.8rem) }
+  @media (max-width:760px){ .capture{ grid-template-columns:repeat(2,1fr) } }
+  .cap { border:0; cursor:pointer; font:inherit; color:#fff; border-radius:9px; padding:.95rem .8rem .85rem;
+    background:var(--c); text-align:left; position:relative; overflow:hidden;
+    box-shadow:0 5px 0 var(--cdark), 0 1px 0 rgba(255,255,255,.28) inset;
+    transition:transform .07s ease, box-shadow .07s ease }
+  .cap:active { transform:translateY(5px); box-shadow:0 0 0 var(--cdark), 0 1px 0 rgba(255,255,255,.28) inset }
+  .cap:focus-visible { outline:3px solid var(--ink); outline-offset:3px }
+  .cap-verb { font-weight:900; font-size:clamp(1rem,2.7vw,1.28rem); letter-spacing:-.02em; line-height:1 }
+  .cap-app { font-family:"DM Mono",monospace; font-size:.55rem; letter-spacing:.18em; opacity:.82; margin-top:.45rem }
+  .cap-sub { font-family:"DM Mono",monospace; font-size:.58rem; opacity:.9; margin-top:.5rem }
+  .cap:disabled { background:var(--pad-off); color:var(--ink-2); box-shadow:0 3px 0 var(--pad-lo); cursor:default }
+  .cap:disabled .cap-verb { opacity:.45 }
+
+  /* ---------- tune row ---------- */
+  .tune { display:grid; grid-template-columns:1.1fr 1.6fr 1.1fr; gap:clamp(.45rem,1.7vw,.8rem) }
+  @media (max-width:820px){ .tune{ grid-template-columns:1fr 1fr } .tune-wide{ grid-column:1/-1 } }
+  @media (max-width:520px){ .tune{ grid-template-columns:1fr } }
+  .ctl { background:var(--pad); border-radius:9px; padding:.7rem .8rem .8rem; display:flex; flex-direction:column;
+    box-shadow:0 4px 0 var(--pad-lo), 0 1px 0 rgba(255,255,255,.5) inset;
+    border-left:4px solid var(--c, transparent) }
+  .ctl.dead { background:var(--pad-off); box-shadow:0 3px 0 var(--pad-lo); border-left-color:var(--pad-lo) }
+  .ctl.dead .ctl-cap, .ctl.dead .step-val, .ctl.dead .fader-val { opacity:.45 }
+  .ctl-cap { font-family:"DM Mono",monospace; font-size:.55rem; letter-spacing:.2em; color:var(--ink-2); margin-bottom:.55rem;
+    display:flex; justify-content:space-between; gap:.5rem }
+
+  .stepper { display:flex; align-items:center; gap:.5rem; margin-top:auto }
+  .step { border:0; cursor:pointer; font:inherit; width:32px; height:32px; flex:none; border-radius:50%;
+    background:var(--panel); color:var(--ink); font-weight:900; font-size:1.05rem; line-height:1;
+    box-shadow:0 3px 0 var(--pad-lo), 0 1px 0 rgba(255,255,255,.6) inset; transition:transform .07s ease, box-shadow .07s ease }
+  .step:active { transform:translateY(3px); box-shadow:0 0 0 var(--pad-lo) }
+  .step:disabled { opacity:.4; cursor:default }
+  .step:focus-visible { outline:2.5px solid var(--accent); outline-offset:2px }
+  .step-val { flex:1; text-align:center; font-weight:900; font-size:1.4rem; letter-spacing:-.03em; font-variant-numeric:tabular-nums; color:var(--ink) }
+  .step-val small { display:block; font-family:"DM Mono",monospace; font-weight:400; font-size:.52rem; letter-spacing:.14em; color:var(--ink-2) }
+
+  .fader-row { display:flex; align-items:center; gap:.8rem; margin-top:auto }
+  input[type=range] { -webkit-appearance:none; appearance:none; flex:1; height:24px; background:transparent; cursor:pointer }
+  input[type=range]:disabled { opacity:.4; cursor:default }
+  input[type=range]:focus-visible { outline:2.5px solid var(--accent); outline-offset:3px; border-radius:4px }
+  input[type=range]::-webkit-slider-runnable-track { height:7px; border-radius:99px; background:rgba(0,0,0,.17);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.35), 0 1px 0 var(--engrave) }
+  input[type=range]::-moz-range-track { height:7px; border-radius:99px; background:rgba(0,0,0,.17) }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:26px; border-radius:4px; margin-top:-9.5px;
+    background:linear-gradient(180deg,#fff,#CFCCC5); box-shadow:0 2px 4px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.9) inset }
+  input[type=range]::-moz-range-thumb { width:16px; height:26px; border:0; border-radius:4px;
+    background:linear-gradient(180deg,#fff,#CFCCC5); box-shadow:0 2px 4px rgba(0,0,0,.4) }
+  .fader-val { font-family:"DM Mono",monospace; font-size:.58rem; color:var(--ink-2); width:5.2rem; flex:none; text-align:right }
+    /* photos per year, sitting behind the scrubber so the fader has a
+     shape to travel across rather than a blank track */
+  .histo { display:flex; align-items:flex-end; gap:2px; height:38px; margin-bottom:.35rem }
+  .histo i { flex:1; min-width:3px; background:rgba(0,0,0,.16); border-radius:2px 2px 0 0;
+    transition:background .14s ease, opacity .14s ease }
+  .histo i.sel { background:var(--archive) }
+  .ctl.dead .histo i { opacity:.3 }
+
+  /* ---------- on this day (archive) ---------- */
+  .otd { display:flex; align-items:center; gap:.8rem; background:var(--pad); border-radius:9px; padding:.65rem .8rem;
+    box-shadow:0 4px 0 var(--pad-lo), 0 1px 0 rgba(255,255,255,.5) inset; border-left:4px solid var(--archive); margin-top:.8rem }
+  .otd.dead { background:var(--pad-off); box-shadow:0 3px 0 var(--pad-lo); border-left-color:var(--pad-lo) }
+  .otd-strip { display:flex; gap:4px; flex:none }
+  .otd-strip i { width:34px; height:34px; border-radius:4px; display:block; box-shadow:0 1px 3px rgba(0,0,0,.3) }
+  .otd.dead .otd-strip i { filter:grayscale(1) brightness(.8); opacity:.4 }
+  .otd-txt { font-family:"DM Mono",monospace; font-size:.6rem; color:var(--ink-2); line-height:1.6; flex:1; min-width:0 }
+  .otd-txt b { color:var(--ink); font-weight:500 }
+  .otd-btn { border:0; cursor:pointer; font:inherit; font-family:"DM Mono",monospace; font-size:.56rem; letter-spacing:.14em;
+    background:var(--panel); color:var(--ink); border-radius:6px; padding:.5rem .8rem; flex:none;
+    box-shadow:0 3px 0 var(--pad-lo), 0 1px 0 rgba(255,255,255,.6) inset }
+  .otd-btn:active { transform:translateY(3px); box-shadow:0 0 0 var(--pad-lo) }
+  .otd-btn:disabled { opacity:.4; cursor:default }
+  .otd-btn:focus-visible { outline:2.5px solid var(--accent); outline-offset:2px }
+
+  /* ---------- nori: where the next snap files, and what came back ---------- */
+  .cat { display:flex; align-items:center; gap:.35rem; flex:none }
+  .cat-val { font-family:"DM Mono",monospace; font-size:.58rem; letter-spacing:.1em; color:var(--ink);
+    width:6.6rem; text-align:center; font-weight:500 }
+  .otd.dead .cat-val { opacity:.45 }
+  .chips { display:flex; gap:5px; flex:1; min-width:0; overflow:hidden }
+  .chip { font-family:"DM Mono",monospace; font-size:.55rem; line-height:1.5; color:var(--ink-2);
+    background:var(--panel); border-radius:5px; padding:.35rem .55rem; white-space:nowrap;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.09); animation:chipin .22s ease }
+  .chip b { color:var(--ink); font-weight:500 }
+  .chip.scanning { animation:pulse 1s ease-in-out infinite }
+  @keyframes chipin { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
+  .chip.empty { opacity:.4; box-shadow:none; background:transparent }
+  .otd.dead .chip { opacity:.35 }
+
+  /* ---------- node ---------- */
+  .node-row { display:grid; grid-template-columns:repeat(3,1fr) auto; gap:clamp(.55rem,2vw,1rem); align-items:end }
+  @media (max-width:720px){ .node-row{ grid-template-columns:repeat(2,1fr) } }
+  @media (max-width:460px){ .node-row{ grid-template-columns:1fr } }
+  .m-top { font-family:"DM Mono",monospace; font-size:.6rem; color:var(--ink-2); display:flex; justify-content:space-between; gap:.5rem }
+  .m-track { height:7px; border-radius:99px; margin-top:.4rem; background:rgba(0,0,0,.17);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.3), 0 1px 0 var(--engrave); overflow:hidden }
+  .m-track i { display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .35s ease }
+  .sentry-lamp { display:flex; align-items:center; gap:.55rem; font-family:"DM Mono",monospace; font-size:.6rem; color:var(--ink-2); white-space:nowrap }
+  .sentry-lamp .led { width:11px; height:11px }
+
+  .serial { text-align:center; font-family:"DM Mono",monospace; font-size:.54rem; color:var(--ink-2); opacity:.6; margin-top:.9rem; letter-spacing:.16em }
+</style>
+
+<div class="proto" id="proto">
+  <span>STATE</span>
+  <button data-state="today" aria-pressed="true">Today</button>
+  <button data-state="built" aria-pressed="false">All built</button>
+</div>
+
+<div class="deck">
+  <span class="screw tl"></span><span class="screw tr"></span>
+  <span class="screw bl"></span><span class="screw br"></span>
+
+  <div class="plate">
+    <div class="brand">
+      <div class="brand-name">COMMANDHQ<small>NODE 105 · THINKCENTRE M900</small></div>
+      <div class="brand-meta">SAT 29 AUG · 21:04<br><span id="activeCount">1 OF 6 ACTIVE</span></div>
+    </div>
+
+    <div class="screen">
+      <div class="screen-head" id="screenHead">NEEDS YOU · 3</div>
+      <div id="screenBody"></div>
+    </div>
+
+    <div class="legend">APPLICATIONS</div>
+    <div class="pads" id="pads"></div>
+
+    <div class="legend" style="margin-top:1.1rem">CAPTURE</div>
+    <div class="capture" id="capture"></div>
+
+    <!-- What SNAP produces, directly beneath SNAP. The category
+         selector decides where the next one files, so pressing the
+         button and steering it are the same gesture. -->
+    <div class="otd" id="snapRow" style="border-left-color:var(--nori)">
+      <div class="cat">
+        <button class="otd-btn" id="catPrev" aria-label="Previous category">◀</button>
+        <div class="cat-val" id="catVal">GROCERIES</div>
+        <button class="otd-btn" id="catNext" aria-label="Next category">▶</button>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="otd-txt" style="flex:none;text-align:right"><b id="snapCount">12 unfiled</b><br><span id="snapSum">£180 unaccounted</span></div>
+    </div>
+
+    <div class="legend" style="margin-top:1.1rem">TUNE</div>
+    <div class="tune">
+      <div class="ctl" style="--c:var(--warden)" id="ctlTarget">
+        <div class="ctl-cap"><span>TARGET</span><span>WARDEN</span></div>
+        <div class="stepper">
+          <button class="step" id="tgtDown" aria-label="Lower target">–</button>
+          <div class="step-val"><span id="tgtVal">100</span><small id="tgtRate">23.0 / DAY</small></div>
+          <button class="step" id="tgtUp" aria-label="Raise target">+</button>
+        </div>
+      </div>
+
+      <!-- Scrubbing a year is a better use of a fader than a settings
+           value: it has a shape behind it, and it drives the On This
+           Day strip below — one control changing what another shows is
+           what makes a panel feel like an instrument. -->
+      <div class="ctl tune-wide" style="--c:var(--archive)" id="ctlYear">
+        <div class="ctl-cap"><span>YEAR</span><span>ARCHIVE</span></div>
+        <div class="histo" id="histo"></div>
+        <div class="fader-row">
+          <input type="range" id="year" min="2014" max="2026" value="2019" aria-label="Archive year">
+          <div class="fader-val" id="yearVal">2019 · 1,140</div>
+        </div>
+      </div>
+
+      <div class="ctl" style="--c:var(--nori)" id="ctlBudget">
+        <div class="ctl-cap"><span>BUDGET</span><span>NORI</span></div>
+        <div class="stepper">
+          <button class="step" id="bdgDown" aria-label="Lower budget">–</button>
+          <div class="step-val">£<span id="bdgVal">1200</span><small id="bdgLeft">£358 LEFT</small></div>
+          <button class="step" id="bdgUp" aria-label="Raise budget">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="otd" id="otd">
+      <div class="otd-strip">
+        <i style="background:linear-gradient(135deg,#5a4a6a,#8a6f9f)"></i>
+        <i style="background:linear-gradient(200deg,#7a5a4a,#c19a7a)"></i>
+        <i style="background:linear-gradient(45deg,#3a5a5a,#6f9f9a)"></i>
+      </div>
+      <div class="otd-txt"><b>On this day</b><br><span id="otdTxt">29 August 2019 · 14 photos</span></div>
+      <button class="otd-btn" id="otdBtn">OPEN</button>
+    </div>
+
+    <div class="legend" style="margin-top:1.1rem">NODE</div>
+    <div class="node-row">
+      <div><div class="m-top"><span>MEMORY</span><span id="memTxt">2.4 / 16 GB</span></div><div class="m-track"><i id="memBar" style="width:15%"></i></div></div>
+      <div><div class="m-top"><span>DISK</span><span id="dskTxt">31 / 120 GB</span></div><div class="m-track"><i id="dskBar" style="width:26%"></i></div></div>
+      <div><div class="m-top"><span>LOAD</span><span id="ldTxt">0.42 / 4</span></div><div class="m-track"><i id="ldBar" style="width:11%"></i></div></div>
+      <div class="sentry-lamp"><span class="led" id="sentryLed" style="--c:var(--sentry)"></span><span id="sentryTxt">SENTRY OFFLINE</span></div>
+    </div>
+
+    <div class="serial">CHQ-105 · 6 BAY · REV A</div>
+  </div>
+</div>
+
+<script>
+  var APPS = [
+    { name:"Warden",   c:"var(--warden)",   live:true,  alarm:true,
+      stat:"BREACH · 4d\n{done} / {target} this month", say:"4 days without applying. Aakash emailed 09:00." },
+    { name:"Nori",     c:"var(--nori)",     live:false, alarm:false,
+      stat:"{receipts} unfiled\n£842 of £{budget}", say:"12 receipts unfiled — £180 unaccounted." },
+    { name:"Vault",    c:"var(--vault)",    live:false, alarm:false,
+      stat:"12,408 files\nsynced 4m ago", say:null },
+    { name:"Archive",  c:"var(--archive)",  live:false, alarm:false,
+      stat:"9,120 photos\n2014 – 2026", say:null },
+    { name:"Registry", c:"var(--registry)", live:false, alarm:false,
+      stat:"{notes} docs\n2 edited today", say:"CV draft untouched for 9 days." },
+    { name:"Sentry",   c:"var(--sentry)",   live:false, alarm:false,
+      stat:"9 containers\n14d uptime", say:"Disk at 26% — nothing urgent." },
+  ];
+
+  /* One capture action per app that produces something. These are
+     sketches — the point is the shape of the row, not the detail. */
+  var CAPTURE = [
+    { verb:"LOG",   app:"WARDEN",   key:"Warden",   c:"--warden",   dark:"#A93A1D",
+      sub:function(){ return today + " today"; },
+      fire:function(){ done++; today++; return ["LOGGED","WARDEN", done+" of "+target+" · rate now "+rate()+"/day"]; } },
+    { verb:"SNAP",  app:"NORI",     key:"Nori",     c:"--nori",     dark:"#B0662A",
+      sub:function(){ return receipts + " unfiled"; },
+      fire:function(){ return snap(); } },
+    { verb:"NOTE",  app:"REGISTRY", key:"Registry", c:"--registry", dark:"#215A44",
+      sub:function(){ return notes + " docs"; },
+      fire:function(){ notes++; return ["CREATED","REGISTRY","untitled note · project: CommandHQ"]; } },
+    { verb:"DROP",  app:"VAULT",    key:"Vault",    c:"--vault",    dark:"#365E7B",
+      sub:function(){ return "3 devices"; },
+      fire:function(){ return ["QUEUED","VAULT","1 file · syncing to 3 devices"]; } },
+  ];
+
+  var mode="today", target=100, done=8, today=8, receipts=12, notes=38, budget=1200, unaccounted=180, flash=null;
+  var pads=document.getElementById("pads"), capWrap=document.getElementById("capture");
+  var sBody=document.getElementById("screenBody"), sHead=document.getElementById("screenHead");
+
+  function isLive(name){ return mode==="built" ? true : APPS.find(function(a){return a.name===name}).live; }
+  function live(){ return APPS.filter(function(a){ return mode==="built" ? true : a.live; }); }
+  function rate(){ return (Math.max(0,target-done)/3).toFixed(1); }
+  function statFor(a){
+    return a.stat.replace("{done}",done).replace("{target}",target)
+                 .replace("{receipts}",receipts).replace("{budget}",budget).replace("{notes}",notes);
+  }
+
+  function drawScreen(o){
+    if (flash){ sHead.textContent=flash[0];
+      sBody.innerHTML='<div class="screen-line"><span class="tag">'+flash[1]+'</span><span class="txt">'+flash[2]+'</span></div>'; return; }
+    if (o){ sHead.textContent="SELECTED";
+      sBody.innerHTML='<div class="screen-line"><span class="tag">'+o.name.toUpperCase()+
+        '</span><span class="txt">'+statFor(o).replace("\n"," · ")+'</span></div>'; return; }
+    var al=live().filter(function(a){return a.say});
+    sHead.textContent="NEEDS YOU · "+al.length;
+    sBody.innerHTML = al.length
+      ? al.slice(0,3).map(function(a){ return '<div class="screen-line"><span class="tag">'+a.name.toUpperCase()+'</span><span class="txt">'+a.say+'</span></div>' }).join("")
+      : '<div class="screen-line quiet"><span class="tag">—</span><span class="txt">Nothing needs you.</span></div>';
+  }
+  function say(h,t,x,ms){ flash=[h,t,x]; drawScreen(null); setTimeout(function(){ flash=null; drawScreen(null); }, ms||2000); }
+
+  function render(){
+    pads.innerHTML="";
+    APPS.forEach(function(a){
+      var on = isLive(a.name);
+      var b=document.createElement("button");
+      b.className="pad"+(on?" on":" off")+(on&&a.alarm?" alarm":"");
+      b.style.setProperty("--c",a.c);
+      if(!on) b.disabled=true;
+      b.innerHTML='<span class="led"></span><span class="pad-name">'+a.name+'</span>'+
+        '<span class="pad-stat">'+(on?statFor(a).replace("\n","<br>"):"NOT INSTALLED")+'</span>';
+      if(on){
+        b.addEventListener("mouseenter",function(){drawScreen(a)});
+        b.addEventListener("focus",function(){drawScreen(a)});
+        b.addEventListener("mouseleave",function(){drawScreen(null)});
+        b.addEventListener("blur",function(){drawScreen(null)});
+      }
+      pads.appendChild(b);
+    });
+
+    capWrap.innerHTML="";
+    CAPTURE.forEach(function(c){
+      var on=isLive(c.key);
+      var b=document.createElement("button");
+      b.className="cap"; b.disabled=!on;
+      b.style.setProperty("--c","var("+c.c+")");
+      b.style.setProperty("--cdark",c.dark);
+      b.innerHTML='<div class="cap-verb">'+c.verb+'</div><div class="cap-app">'+c.app+'</div>'+
+        '<div class="cap-sub">'+(on?c.sub():"not installed")+'</div>';
+      if(on) b.addEventListener("click",function(){ var r=c.fire(); render(); say(r[0],r[1],r[2],2000); });
+      capWrap.appendChild(b);
+    });
+
+    var n=live().length;
+    document.getElementById("activeCount").textContent=n+" OF 6 ACTIVE";
+    document.getElementById("tgtVal").textContent=target;
+    document.getElementById("tgtRate").textContent=rate()+" / DAY";
+    document.getElementById("bdgVal").textContent=budget;
+    document.getElementById("bdgLeft").textContent="£"+(budget-842)+" LEFT";
+
+    var noriOn=isLive("Nori"), archOn=isLive("Archive"), sentOn=isLive("Sentry");
+    document.getElementById("ctlBudget").classList.toggle("dead",!noriOn);
+    document.getElementById("bdgUp").disabled=!noriOn;
+    document.getElementById("bdgDown").disabled=!noriOn;
+    document.getElementById("snapRow").classList.toggle("dead",!noriOn);
+    document.getElementById("catPrev").disabled=!noriOn;
+    document.getElementById("catNext").disabled=!noriOn;
+    drawChips(); drawCat();
+    document.getElementById("otd").classList.toggle("dead",!archOn);
+    document.getElementById("otdBtn").disabled=!archOn;
+    document.getElementById("ctlYear").classList.toggle("dead",!archOn);
+    yearEl.disabled=!archOn;
+    drawYear();
+    document.getElementById("sentryLed").style.background = sentOn ? "var(--sentry)" : "rgba(0,0,0,.22)";
+    document.getElementById("sentryLed").style.boxShadow = sentOn ? "0 0 10px 1px var(--sentry)" : "inset 0 1px 2px rgba(0,0,0,.55)";
+    document.getElementById("sentryTxt").textContent = sentOn ? "ALL GREEN · 14d" : "SENTRY OFFLINE";
+
+    var mem=.9+n*1.5, dsk=24+n*7, ld=.18+n*.24;
+    document.getElementById("memTxt").textContent=mem.toFixed(1)+" / 16 GB";
+    document.getElementById("memBar").style.width=(mem/16*100)+"%";
+    document.getElementById("dskTxt").textContent=Math.round(dsk)+" / 120 GB";
+    document.getElementById("dskBar").style.width=(dsk/120*100)+"%";
+    document.getElementById("ldTxt").textContent=ld.toFixed(2)+" / 4";
+    document.getElementById("ldBar").style.width=(ld/4*100)+"%";
+
+    drawScreen(null);
+  }
+
+  /* Real-shaped: the 2020 dip is lockdown. Sums to the 9,120 on
+     Archive's pad, because the panel never shows a number twice and
+     gets it wrong once. */
+  var YEARS = {
+    2014:[180,4,"Home"], 2015:[320,0,null], 2016:[410,7,"Brighton"], 2017:[520,2,"Home"],
+    2018:[690,11,"Edinburgh"], 2019:[1140,14,"Lisbon"], 2020:[380,0,null], 2021:[610,6,"Cornwall"],
+    2022:[790,9,"Amsterdam"], 2023:[920,3,"Home"], 2024:[1080,18,"Croatia"], 2025:[1160,5,"London"],
+    2026:[920,0,null]
+  };
+
+  var yearEl = document.getElementById("year");
+
+  function drawYear() {
+    var y = +yearEl.value, d = YEARS[y], max = 1160;
+    document.getElementById("yearVal").textContent = y + " · " + d[0].toLocaleString();
+
+    var h = document.getElementById("histo");
+    h.innerHTML = "";
+    Object.keys(YEARS).forEach(function (k) {
+      var bar = document.createElement("i");
+      bar.style.height = Math.max(8, YEARS[k][0] / max * 100) + "%";
+      if (+k === y) bar.className = "sel";
+      h.appendChild(bar);
+    });
+
+    // the scrubber drives the strip below it
+    var txt = document.getElementById("otdTxt");
+    if (!isLive("Archive")) { txt.textContent = "not installed"; return; }
+    txt.textContent = d[1]
+      ? "29 August " + y + " · " + d[2] + " · " + d[1] + " photos"
+      : "29 August " + y + " · nothing that day";
+  }
+  yearEl.addEventListener("input", drawYear);
+
+  /* Nori: the merchant is read off the photo, but the category is
+     whatever the selector is pointed at — steering and capturing are
+     the same gesture. */
+  var CATS = ["GROCERIES","EATING OUT","TRANSPORT","BILLS","OTHER"];
+  var catIdx = 0;
+  var SHOPS = [["Tesco Express",12.40],["Pret A Manger",4.85],["TfL",2.80],
+               ["Boots",9.99],["Sainsbury's",23.15],["Costa",3.60],["Co-op",7.25]];
+  var chips = [];
+
+  function drawChips() {
+    var el = document.getElementById("chips");
+    if (!isLive("Nori")) { el.innerHTML = '<span class="chip empty">not installed</span>'; return; }
+    el.innerHTML = chips.length
+      ? chips.slice(0, 4).map(function (c) {
+          return c.scanning
+            ? '<span class="chip scanning">reading…</span>'
+            : '<span class="chip"><b>£' + c.amt.toFixed(2) + '</b> ' + c.shop + '</span>';
+        }).join("")
+      : '<span class="chip empty">nothing captured yet</span>';
+  }
+
+  function drawCat() {
+    document.getElementById("catVal").textContent = CATS[catIdx];
+    document.getElementById("snapCount").textContent = receipts + " unfiled";
+    document.getElementById("snapSum").textContent = "£" + unaccounted.toFixed(0) + " unaccounted";
+  }
+
+  /* Pressing SNAP shows the extraction actually happening — a chip
+     lands as "reading…" and resolves a beat later. That pause is the
+     LLM pass, and it is the interesting part of Nori. */
+  function snap() {
+    var pick = SHOPS[Math.floor(Math.random() * SHOPS.length)];
+    var chip = { shop: pick[0], amt: pick[1], scanning: true };
+    chips.unshift(chip);
+    drawChips();
+    setTimeout(function () {
+      chip.scanning = false;
+      receipts++;
+      unaccounted += chip.amt;
+      drawChips(); drawCat(); render();
+      say("EXTRACTED", "NORI", "£" + chip.amt.toFixed(2) + " · " + chip.shop + " · filed to " + CATS[catIdx], 2000);
+    }, 900);
+    return ["CAPTURING", "NORI", "reading receipt…"];
+  }
+
+  document.getElementById("catPrev").addEventListener("click", function () {
+    catIdx = (catIdx - 1 + CATS.length) % CATS.length; drawCat();
+    say("CATEGORY", "NORI", "next capture files to " + CATS[catIdx], 1400);
+  });
+  document.getElementById("catNext").addEventListener("click", function () {
+    catIdx = (catIdx + 1) % CATS.length; drawCat();
+    say("CATEGORY", "NORI", "next capture files to " + CATS[catIdx], 1400);
+  });
+
+  document.getElementById("tgtUp").addEventListener("click",function(){ target=Math.min(500,target+10); render(); say("TARGET","WARDEN",target+" a month · "+rate()+" a day",1400) });
+  document.getElementById("tgtDown").addEventListener("click",function(){ target=Math.max(10,target-10); render(); say("TARGET","WARDEN",target+" a month · "+rate()+" a day",1400) });
+  document.getElementById("bdgUp").addEventListener("click",function(){ budget+=50; render(); say("BUDGET","NORI","£"+budget+" a month · £"+(budget-842)+" left",1400) });
+  document.getElementById("bdgDown").addEventListener("click",function(){ budget=Math.max(100,budget-50); render(); say("BUDGET","NORI","£"+budget+" a month · £"+(budget-842)+" left",1400) });
+  document.getElementById("otdBtn").addEventListener("click",function(){
+    var y=+yearEl.value, d=YEARS[y];
+    say("ARCHIVE","ON THIS DAY", d[1] ? "29 Aug "+y+" · "+d[2]+" · "+d[1]+" photos" : "29 Aug "+y+" · nothing that day", 2200);
+  });
+
+
+  document.getElementById("proto").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    mode=b.dataset.state;
+    this.querySelectorAll("button").forEach(function(o){ o.setAttribute("aria-pressed", o===b?"true":"false") });
+    render();
+  });
+
+  render();
+</script>
