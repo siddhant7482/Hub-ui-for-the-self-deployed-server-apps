@@ -45,7 +45,7 @@ export const APPS: AppEntry[] = [
     role: "Jobs · enforcement",
     colour: "#D8341F",
     shade: "#A93A1D",
-    url: env("WARDEN_URL") ?? "http://localhost:3000",
+    url: env("WARDEN_URL") ?? "http://localhost:3003",
     capture: { verb: "LOG", hint: "log an application" },
     settingsPath: "/api/settings",
   },

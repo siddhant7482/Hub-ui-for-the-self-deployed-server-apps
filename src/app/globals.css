@@ -123,7 +123,7 @@ a.screen-line:focus-visible { outline:2px solid var(--screen-fg); outline-offset
   gap:var(--gap); flex:1 1 auto; min-height:0 }
 @media (max-width:760px){ .pads{ grid-template-columns:repeat(2,1fr); flex:0 0 auto } }
 @media (max-width:480px){ .pads{ grid-template-columns:1fr } }
-.pad { min-width:0; border:0; cursor:pointer; text-align:left; font:inherit; color:var(--ink); background:var(--pad);
+.pad { min-width:0; overflow:hidden; border:0; cursor:pointer; text-align:left; font:inherit; color:var(--ink); background:var(--pad);
   border-radius:9px; padding:.75rem; display:flex; flex-direction:column; gap:.45rem; text-decoration:none;
   box-shadow:0 4px 0 var(--pad-lo), 0 1px 0 rgba(255,255,255,.5) inset; transition:transform .07s ease, box-shadow .07s ease }
 .pad:hover { filter:brightness(1.03) }
@@ -290,3 +290,49 @@ input[type=range]::-moz-range-thumb { width:16px; height:26px; border:0; border-
 
 .booting .pad-name, .booting .pad-role, .booting .cap-verb { opacity:.34 }
 .booting .screen-line { opacity:.8 }
+
+/* ---------- fit to one screen ----------
+   A deck you have to scroll is a form. On a desktop the panel is sized
+   to the viewport and the pad grid absorbs whatever is left over.
+
+   Two tiers on purpose: the vertical rhythm compresses from 620px tall,
+   but scrolling is only switched off above 700px, where the compression
+   is definitely enough. Clipping content to avoid a scrollbar is worse
+   than the scrollbar. */
+@media (min-width: 860px) and (min-height: 620px) {
+  .brand  { margin-bottom: clamp(.45rem, 1.1vh, .85rem) }
+  .screen { min-height: 0; padding: clamp(.5rem, 1.1vh, .8rem) .95rem;
+            margin-bottom: clamp(.5rem, 1.2vh, .95rem) }
+  .legend { margin: clamp(.45rem, 1.1vh, .9rem) 0 clamp(.28rem, .7vh, .6rem) }
+
+  /* min-height 0 lets the pads give back space instead of forcing the
+     panel taller than the screen. */
+  .pads { grid-auto-rows: minmax(0, 1fr) }
+  .pad  { min-height: 0; padding: clamp(.5rem, 1.1vh, .78rem);
+          gap: clamp(.18rem, .5vh, .45rem) }
+  .pad-role { margin-top: clamp(.1rem, .3vh, .25rem) }
+  .pad-stat { line-height: 1.35 }
+
+  .cap     { padding: clamp(.5rem, 1.2vh, .9rem) .8rem }
+  .cap-app { margin-top: clamp(.18rem, .5vh, .4rem) }
+  .cap-sub { margin-top: clamp(.2rem, .55vh, .45rem) }
+
+  .strip { padding: clamp(.38rem, .9vh, .6rem) .8rem;
+           margin-top: clamp(.32rem, .85vh, .7rem) }
+  .thumbs i { width: clamp(24px, 3.4vh, 32px); height: clamp(24px, 3.4vh, 32px) }
+
+  .ctl     { padding: clamp(.42rem, 1vh, .65rem) .8rem clamp(.45rem, 1.1vh, .75rem) }
+  .ctl-cap { margin-bottom: clamp(.28rem, .8vh, .5rem) }
+  .histo   { height: clamp(18px, 3.2vh, 34px); margin-bottom: clamp(.2rem, .5vh, .35rem) }
+  .step    { width: clamp(26px, 3.4vh, 32px); height: clamp(26px, 3.4vh, 32px) }
+
+  .serial { margin-top: clamp(.35rem, .9vh, .85rem) }
+}
+
+/* Tall enough that everything above definitely fits, so the scrollbar
+   can go without anything being cut off. */
+@media (min-width: 860px) and (min-height: 700px) {
+  html, body { height: 100%; overflow: hidden }
+  .deck  { height: 100% }
+  .plate { min-height: 0; overflow: hidden }
+}

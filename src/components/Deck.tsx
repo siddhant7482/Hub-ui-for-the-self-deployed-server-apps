@@ -155,7 +155,7 @@ export function Deck(props: DeckProps) {
                 </div>
                 <span className="pad-stat">
                   {on && s?.metrics.length
-                    ? s.metrics.map((m, i) => <span key={i}>{m.value}<br /></span>)
+                    ? s.metrics.map((m) => m.value).join("  ·  ")
                     : app.url ? (s?.headline ?? "unreachable") : "NOT INSTALLED"}
                 </span>
               </>
