@@ -131,8 +131,9 @@ export function Deck(props: DeckProps) {
                       {a.due ? <span className="when">{due(a.due)}</span> : null}
                     </>
                   );
-                  return app?.url && a.href
-                    ? <a className="screen-line" key={i} href={`${app.url}${a.href}`}>{inner}</a>
+                  const to = app ? (app.link ?? app.url) : null;
+                  return to && a.href
+                    ? <a className="screen-line" key={i} href={`${to}${a.href}`}>{inner}</a>
                     : <div className="screen-line" key={i}>{inner}</div>;
                 })
               )}
@@ -163,7 +164,7 @@ export function Deck(props: DeckProps) {
             const cls = `pad ${on ? "on" : "off"} ${s?.level === "attention" ? "alarm" : ""} ${app.url && !on ? "down" : ""}`;
             const style = { ["--c" as string]: app.colour };
             return on && app.url ? (
-              <a key={app.id} className={cls} href={app.url} style={style}
+              <a key={app.id} className={cls} href={app.link ?? app.url} style={style}
                  onMouseEnter={() => setHover(app.id)} onMouseLeave={() => setHover(null)}
                  onFocus={() => setHover(app.id)} onBlur={() => setHover(null)}>{inner}</a>
             ) : (
